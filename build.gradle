@@ -1,0 +1,63 @@
+buildscript {
+    ext.kotlin_version = '1.3.0'
+    ext.junit_version = '5.3.2'
+    ext.slf4j_version = '1.7.25'
+
+    repositories {
+        mavenCentral()
+        jcenter()
+    }
+    dependencies {
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+        classpath "org.jetbrains.kotlin:kotlin-serialization:$kotlin_version"
+    }
+}
+
+plugins {
+    id 'org.jetbrains.kotlin.jvm' version "1.3.11"
+    id "au.com.dius.pact" version "3.6.1"
+}
+
+group 'de.codecentric.pact'
+version '0.0.1'
+
+sourceCompatibility = '1.8'
+targetCompatibility = '1.8'
+
+apply plugin: 'kotlin'
+
+repositories {
+    mavenCentral()
+    jcenter()
+}
+
+dependencies {
+    compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
+
+//    compile group: 'com.uchuhimo', name: "konf", version: "0.13.1"
+    
+    compile "com.fasterxml.jackson.module:jackson-module-kotlin:2.8.2"
+
+    compile group: 'com.amazonaws', name: 'aws-java-sdk-sqs', version: '1.11.479'
+
+    compile group: 'org.slf4j', name: 'slf4j-api', version: "${slf4j_version}"
+
+    testCompile group: 'au.com.dius', name: 'pact-jvm-consumer-junit5_2.12', version: '3.6.1'
+    testCompile 'au.com.dius:pact-jvm-consumer-java8_2.12:3.6.1'
+
+    testCompile group: 'org.testcontainers', name: 'testcontainers', version: '1.10.5'
+    testCompile group: 'org.testcontainers', name: 'junit-jupiter', version: '1.10.5'
+    testCompile group: 'org.testcontainers', name: 'localstack', version: '1.10.5'
+}
+
+//compileKotlin {
+//    kotlinOptions {
+//        jvmTarget = java_version
+//    }
+//}
+//
+//compileTestKotlin {
+//    kotlinOptions {
+//        jvmTarget = java_version
+//    }
+//}
