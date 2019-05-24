@@ -4,9 +4,10 @@ import com.amazonaws.services.sqs.model.CreateQueueRequest
 import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.KotlinModule
-import de.codecentric.pact.FulfillmentHandler
-import de.codecentric.pact.Order
-import de.codecentric.pact.OrderService
+import de.codecentric.pact.fulfillment.FulfillmentHandler
+import de.codecentric.pact.order.Item
+import de.codecentric.pact.order.Order
+import de.codecentric.pact.order.OrderService
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -15,13 +16,14 @@ object Main {
     @JvmStatic
     fun main(args: Array<String>) {
         val sqs = AmazonSQSClientBuilder.standard()
-                .withEndpointConfiguration(
-                        AwsClientBuilder.EndpointConfiguration("http://localhost:4576", "rightHere"))
-                .build()
+            .withEndpointConfiguration(
+                AwsClientBuilder.EndpointConfiguration("http://localhost:4576", "rightHere")
+            )
+            .build()
 
         val objectMapper = ObjectMapper()
-                .registerModule(KotlinModule())
-                .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
+            .registerModule(KotlinModule())
+            .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
 
         println("Creating an SQS queue 'fulfillment'")
         val createQueueRequest = CreateQueueRequest("fulfillment")
@@ -31,7 +33,15 @@ object Main {
         val orderService = OrderService(sqs, queueUrl, objectMapper)
         val orderProducer = GlobalScope.launch {
             while (true) {
-                val order = Order(listOf("item", "secondItem", "aThirdItem"), "theCustomer", "myReferralPartner")
+                val order = Order(
+                    listOf(
+                        Item("item", 650),
+                        Item("secondItem", 111),
+                        Item("aThirdItem", 222)
+                    ),
+                    "theCustomer",
+                    "myReferralPartner"
+                )
                 orderService.sendOrder(order)
                 delay(1000)
             }

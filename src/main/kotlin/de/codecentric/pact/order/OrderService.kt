@@ -1,4 +1,4 @@
-package de.codecentric.pact
+package de.codecentric.pact.order
 
 import com.amazonaws.AmazonClientException
 import com.amazonaws.AmazonServiceException

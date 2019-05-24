@@ -19,9 +19,9 @@ repositories {
 dependencies {
     compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
     compile "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.2.1"
-    compile "com.fasterxml.jackson.module:jackson-module-kotlin:2.8.2"
+    compile "com.fasterxml.jackson.module:jackson-module-kotlin:2.9.9"
     compile "com.amazonaws:aws-java-sdk-sqs:1.11.479"
-    compile "org.slf4j:slf4j-api:$slf4j_version"
+    compile "org.slf4j:slf4j-simple:$slf4j_version"
 
     testCompile "au.com.dius:pact-jvm-consumer-junit5_2.12:$pact_version"
     testCompile "au.com.dius:pact-jvm-consumer-java8_2.12:$pact_version"
@@ -29,4 +29,6 @@ dependencies {
     testCompile "org.testcontainers:testcontainers:$testcontainters_version"
     testCompile "org.testcontainers:junit-jupiter:$testcontainters_version"
     testCompile "org.testcontainers:localstack:$testcontainters_version"
+
+    testCompile "cloud.localstack:localstack-utils:0.1.21"
 }
