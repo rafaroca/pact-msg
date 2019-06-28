@@ -2,6 +2,7 @@ package de.codecentric.pact
 
 import au.com.dius.pact.consumer.MessagePactBuilder
 import au.com.dius.pact.consumer.Pact
+import au.com.dius.pact.consumer.PactFolder
 import au.com.dius.pact.consumer.junit5.PactConsumerTestExt
 import au.com.dius.pact.consumer.junit5.PactTestFor
 import au.com.dius.pact.consumer.junit5.ProviderType
@@ -19,6 +20,7 @@ import org.junit.jupiter.api.extension.ExtendWith
 
 @ExtendWith(PactConsumerTestExt::class)
 @PactTestFor(providerName = "order-service", providerType = ProviderType.ASYNCH)
+@PactFolder("pacts")
 @LocalstackDockerProperties(randomizePorts = true, services = ["sqs"])
 class FulfillmentServiceConsumerContractTest {
 
@@ -55,7 +57,7 @@ class FulfillmentServiceConsumerContractTest {
     @PactTestFor(pactMethod = "exportAnOrderTo")
     fun testExportAnOrder(messages: List<Message>) {
         for (message in messages) {
-            val (customerId, sum) = fulfillmentHandler.handleRequest(message.contents!!.value!!)
+            val (customerId, sum) = fulfillmentHandler.handleRequest(message.contents!!.valueAsString())
 
             assertEquals(customerId, testCustomerId)
             assertEquals(sum, 1354)
