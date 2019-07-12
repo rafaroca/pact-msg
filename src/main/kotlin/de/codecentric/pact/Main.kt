@@ -11,8 +11,12 @@ import de.codecentric.pact.order.OrderService
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 
 object Main {
+    private val log: Logger = LoggerFactory.getLogger(this::class.java)
+
     @JvmStatic
     fun main(args: Array<String>) {
         val sqs = AmazonSQSClientBuilder.standard()
@@ -25,11 +29,11 @@ object Main {
             .registerModule(KotlinModule())
             .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
 
-        println("Creating an SQS queue 'fulfillment'")
+        log.info("Creating an SQS queue 'fulfillment'")
         val createQueueRequest = CreateQueueRequest("fulfillment")
         val queueUrl = sqs.createQueue(createQueueRequest).queueUrl
 
-        println("Creating the OrderService to send an order")
+        log.info("Creating the OrderService to send an order")
         val orderService = OrderService(sqs, queueUrl, objectMapper)
         val orderProducer = GlobalScope.launch {
             while (true) {
@@ -47,7 +51,7 @@ object Main {
             }
         }
 
-        println("Creating the FulfillmentHandler to receive orders")
+        log.info("Creating the FulfillmentHandler to receive orders")
         val fulfillmentConsumer = GlobalScope.launch {
             val fulfillmentHandler = FulfillmentHandler(objectMapper)
 
@@ -62,7 +66,7 @@ object Main {
             }
         }
 
-        println("Press <Enter> to exit")
+        log.info("Press <Enter> to exit")
         readLine()
         orderProducer.cancel()
         fulfillmentConsumer.cancel()
