@@ -23,6 +23,9 @@ dependencies {
     compile "com.amazonaws:aws-java-sdk-sqs:1.11.479"
     compile "org.slf4j:slf4j-simple:$slf4j_version"
 
+    testCompile group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: junit_version
+    testCompile group: 'io.mockk', name: 'mockk', version: '1.9.1'
+
     testCompile "au.com.dius:pact-jvm-provider-junit5_2.12:$pact_version"
     testCompile "au.com.dius:pact-jvm-consumer-junit5_2.12:$pact_version"
     testCompile "au.com.dius:pact-jvm-consumer-java8_2.12:$pact_version"

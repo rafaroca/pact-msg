@@ -13,8 +13,8 @@ class OrderService(private val sqs: AmazonSQS, private val queueUrl: String, pri
 
     fun sendOrder(order: Order) {
         try {
-            sqs.sendMessage(SendMessageRequest(queueUrl, mapper.writeValueAsString(order)))
             log.info("Sending an order on to fulfillment queue")
+            sqs.sendMessage(createSqsMessage(order))
 
         } catch (e: AmazonServiceException) {
             log.info("The request was rejected by SQS with http status '${e.statusCode}' aws error '${e.errorCode}' exception type '${e.errorType}' message '${e.message}'")
@@ -23,4 +23,7 @@ class OrderService(private val sqs: AmazonSQS, private val queueUrl: String, pri
             log.info("The request could not be executed with message '${e.message}'")
         }
     }
+
+    fun createSqsMessage(order: Order) =
+        SendMessageRequest(queueUrl, mapper.writeValueAsString(order))
 }
