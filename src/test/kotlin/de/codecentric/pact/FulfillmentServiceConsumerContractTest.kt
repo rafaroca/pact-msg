@@ -14,6 +14,7 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.KotlinModule
 import de.codecentric.pact.fulfillment.FulfillmentHandler
 import io.pactfoundation.consumer.dsl.LambdaDsl.newJsonBody
+import io.pactfoundation.consumer.dsl.newObject
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
@@ -40,13 +41,17 @@ class FulfillmentServiceConsumerContractTest {
             newJsonBody { o ->
                 o.stringType("customerId", testCustomerId)
                 o.array("items") { a ->
-                    a.`object` { inner ->
-                        inner.stringType("name", "A Teddy Bear")
-                        inner.numberType("price", 1295)
+                    a.newObject { item ->
+                        item.stringType("name", "A Teddy Bear")
+                        item.numberType("price", 1295)
                     }
-                    a.`object` { inner ->
-                        inner.stringType("name", "Googly Eyes")
-                        inner.numberType("price", 59)
+                    a.newObject { item ->
+                        item.stringType("name", "Googly Eyes")
+                        item.numberType("price", 59)
+                    }
+                    a.newObject { item ->
+                        item.stringType("name", "Goofy Socks")
+                        item.numberType("price", 100)
                     }
                 }
             }.build()
@@ -59,8 +64,8 @@ class FulfillmentServiceConsumerContractTest {
         for (message in messages) {
             val (customerId, sum) = fulfillmentHandler.handleRequest(message.contents!!.valueAsString())
 
-            assertEquals(customerId, testCustomerId)
-            assertEquals(sum, 1354)
+            assertEquals(testCustomerId, customerId)
+            assertEquals(1454, sum)
         }
     }
 }
