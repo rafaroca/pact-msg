@@ -26,7 +26,6 @@ class OrderServiceProviderVerificationTest {
 
     private val sqs: AmazonSQS = mockk()
     private val objectMapper = jacksonObjectMapper()
-    private lateinit var order: Order
 
     @TestTemplate
     @ExtendWith(PactVerificationInvocationContextProvider::class)
@@ -40,9 +39,10 @@ class OrderServiceProviderVerificationTest {
         context.target = AmpqTestTarget(Collections.emptyList())
     }
 
-    @State("An order with three items")
-    fun anOrderWithThreeItems() {
-        order = Order(
+    @PactVerifyProvider("an order event")
+    fun anOrderToExport(): String? {
+        val orderService = OrderService(sqs, "localhost", objectMapper)
+        val order = Order(
             listOf(
                 Item("A secret machine", 1559),
                 Item("A riddle", 9990),
@@ -50,13 +50,8 @@ class OrderServiceProviderVerificationTest {
             ), "customerId"
             , "referralPartner"
         )
-    }
 
-    @PactVerifyProvider("an order to export")
-    fun anOrderToExport(): String? {
-        val orderService = OrderService(sqs, "localhost", objectMapper)
-
-        val message = orderService.createSqsMessage(this.order)
+        val message = orderService.createSqsMessage(order)
 
         return message.messageBody
     }

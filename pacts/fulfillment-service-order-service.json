@@ -7,7 +7,7 @@
   },
   "messages": [
     {
-      "description": "an order to export",
+      "description": "an order event",
       "metaData": {
         "contentType": "application/json; charset\u003dUTF-8"
       },
@@ -28,11 +28,6 @@
           }
         ]
       },
-      "providerStates": [
-        {
-          "name": "An order with three items"
-        }
-      ],
       "matchingRules": {
         "body": {
           "$.customerId": {

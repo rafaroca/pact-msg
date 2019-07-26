@@ -34,9 +34,8 @@ class FulfillmentServiceConsumerContractTest {
     private val testCustomerId = "230542"
 
     @Pact(consumer = "fulfillment-service", provider = "order-service")
-    fun exportAnOrderTo(builder: MessagePactBuilder): MessagePact = builder.hasPactWith("order-service")
-        .given("An order with three items")
-        .expectsToReceive("an order to export")
+    fun orderEvent(builder: MessagePactBuilder): MessagePact = builder.hasPactWith("order-service")
+        .expectsToReceive("an order event")
         .withContent(
             newJsonBody { o ->
                 o.stringType("customerId", testCustomerId)
@@ -59,7 +58,7 @@ class FulfillmentServiceConsumerContractTest {
         .toPact()
 
     @Test
-    @PactTestFor(pactMethod = "exportAnOrderTo")
+    @PactTestFor(pactMethod = "orderEvent")
     fun testExportAnOrder(messages: List<Message>) {
         for (message in messages) {
             val (customerId, sum) = fulfillmentHandler.handleRequest(message.contents!!.valueAsString())
