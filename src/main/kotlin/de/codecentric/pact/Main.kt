@@ -4,6 +4,7 @@ import com.amazonaws.services.sqs.model.CreateQueueRequest
 import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.KotlinModule
+import de.codecentric.pact.billing.BillingHandler
 import de.codecentric.pact.fulfillment.FulfillmentHandler
 import de.codecentric.pact.order.Item
 import de.codecentric.pact.order.Order
@@ -59,7 +60,24 @@ object Main {
                 val messageResult = sqs.receiveMessage(queueUrl)
                 messageResult?.messages?.forEach { message ->
                     message.body?.let {
-                        fulfillmentHandler.handleRequest(it)
+                        val (items, customerId) = fulfillmentHandler.handleRequest(it)
+                        log.info("Shipping ${items.size} items to customer $customerId")
+                    }
+                }
+                delay(500)
+            }
+        }
+
+        log.info("Creating the BillingHandler to receive orders")
+        val billingConsumer = GlobalScope.launch {
+            val billingHandler = BillingHandler(objectMapper)
+
+            while (true) {
+                val messageResult = sqs.receiveMessage(queueUrl)
+                messageResult?.messages?.forEach { message ->
+                    message.body?.let {
+                        val (items, customerId) = billingHandler.handleRequest(it)
+                        log.info("Sending invoice with total € ${items.sumBy { it.price }} items to customer $customerId")
                     }
                 }
                 delay(500)
@@ -70,6 +88,7 @@ object Main {
         readLine()
         orderProducer.cancel()
         fulfillmentConsumer.cancel()
+        billingConsumer.cancel()
         sqs.deleteQueue(queueUrl)
     }
 }
