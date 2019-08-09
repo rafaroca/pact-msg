@@ -13,7 +13,7 @@ class OrderService(private val sqs: AmazonSQS, private val queueUrl: String, pri
 
     fun sendOrder(order: Order) {
         try {
-            log.info("Sending an order on to fulfillment queue")
+            log.info("Sending an order to the queue $queueUrl")
             sqs.sendMessage(createSqsMessage(order))
 
         } catch (e: AmazonServiceException) {

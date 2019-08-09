@@ -25,7 +25,8 @@ dependencies {
 
     testCompile group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: junit_version
     testCompile group: 'io.mockk', name: 'mockk', version: '1.9.1'
-
+    testCompile group: 'com.willowtreeapps.assertk', name: 'assertk-jvm', version: '0.19'
+    
     testCompile "au.com.dius:pact-jvm-provider-junit5_2.12:$pact_version"
     testCompile "au.com.dius:pact-jvm-consumer-junit5_2.12:$pact_version"
     testCompile "au.com.dius:pact-jvm-consumer-java8_2.12:$pact_version"
