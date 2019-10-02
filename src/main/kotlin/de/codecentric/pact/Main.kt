@@ -6,9 +6,9 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.KotlinModule
 import de.codecentric.pact.billing.BillingHandler
 import de.codecentric.pact.fulfillment.FulfillmentHandler
-import de.codecentric.pact.order.Item
-import de.codecentric.pact.order.Order
-import de.codecentric.pact.order.OrderService
+import de.codecentric.pact.checkout.Item
+import de.codecentric.pact.checkout.Order
+import de.codecentric.pact.checkout.CheckoutService
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -34,8 +34,8 @@ object Main {
         val createQueueRequest = CreateQueueRequest("fulfillment")
         val queueUrl = sqs.createQueue(createQueueRequest).queueUrl
 
-        log.info("Creating the OrderService to send an order")
-        val orderService = OrderService(sqs, queueUrl, objectMapper)
+        log.info("Creating the CheckoutService to send an order")
+        val checkoutService = CheckoutService(sqs, queueUrl, objectMapper)
         val orderProducer = GlobalScope.launch {
             while (true) {
                 val order = Order(
@@ -47,7 +47,7 @@ object Main {
                     "theCustomer",
                     "myReferralPartner"
                 )
-                orderService.sendOrder(order)
+                checkoutService.sendOrder(order)
                 delay(1000)
             }
         }

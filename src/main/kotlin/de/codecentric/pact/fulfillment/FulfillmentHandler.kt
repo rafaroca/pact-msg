@@ -1,7 +1,6 @@
 package de.codecentric.pact.fulfillment
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import de.codecentric.pact.order.Item
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 

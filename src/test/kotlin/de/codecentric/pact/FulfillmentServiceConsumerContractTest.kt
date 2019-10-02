@@ -20,7 +20,7 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 
 @ExtendWith(PactConsumerTestExt::class)
-@PactTestFor(providerName = "order-service", providerType = ProviderType.ASYNCH)
+@PactTestFor(providerName = "checkout-service", providerType = ProviderType.ASYNCH)
 @PactFolder("pacts")
 @LocalstackDockerProperties(randomizePorts = true, services = ["sqs"])
 class FulfillmentServiceConsumerContractTest {
@@ -33,8 +33,8 @@ class FulfillmentServiceConsumerContractTest {
 
     private val testCustomerId = "230542"
 
-    @Pact(consumer = "fulfillment-service", provider = "order-service")
-    fun orderEvent(builder: MessagePactBuilder): MessagePact = builder.hasPactWith("order-service")
+    @Pact(consumer = "fulfillment-service", provider = "checkout-service")
+    fun orderEvent(builder: MessagePactBuilder): MessagePact = builder.hasPactWith("checkout-service")
         .expectsToReceive("an order event")
         .withContent(
             newJsonBody { o ->

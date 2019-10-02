@@ -4,25 +4,24 @@ import au.com.dius.pact.model.Interaction
 import au.com.dius.pact.model.Pact
 import au.com.dius.pact.provider.PactVerifyProvider
 import au.com.dius.pact.provider.junit.Provider
-import au.com.dius.pact.provider.junit.State
 import au.com.dius.pact.provider.junit.loader.PactFolder
 import au.com.dius.pact.provider.junit5.AmpqTestTarget
 import au.com.dius.pact.provider.junit5.PactVerificationContext
 import au.com.dius.pact.provider.junit5.PactVerificationInvocationContextProvider
 import com.amazonaws.services.sqs.AmazonSQS
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import de.codecentric.pact.order.Item
-import de.codecentric.pact.order.Order
-import de.codecentric.pact.order.OrderService
+import de.codecentric.pact.checkout.Item
+import de.codecentric.pact.checkout.Order
+import de.codecentric.pact.checkout.CheckoutService
 import io.mockk.mockk
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.TestTemplate
 import org.junit.jupiter.api.extension.ExtendWith
 import java.util.Collections
 
-@Provider("order-service")
+@Provider("checkout-service")
 @PactFolder("pacts")
-class OrderServiceProviderVerificationTest {
+class CheckoutServiceProviderVerificationTest {
 
     private val sqs: AmazonSQS = mockk()
     private val objectMapper = jacksonObjectMapper()
@@ -41,7 +40,7 @@ class OrderServiceProviderVerificationTest {
 
     @PactVerifyProvider("an order event")
     fun anOrderToExport(): String? {
-        val orderService = OrderService(sqs, "localhost", objectMapper)
+        val checkoutService = CheckoutService(sqs, "localhost", objectMapper)
         val order = Order(
             listOf(
                 Item("A secret machine", 1559),
@@ -51,7 +50,7 @@ class OrderServiceProviderVerificationTest {
             , "referralPartner"
         )
 
-        val message = orderService.createSqsMessage(order)
+        val message = checkoutService.createSqsMessage(order)
 
         return message.messageBody
     }

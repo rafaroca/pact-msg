@@ -1,5 +1,4 @@
 import assertk.assertThat
-import assertk.assertions.containsAll
 import assertk.assertions.hasSize
 import assertk.assertions.isEqualTo
 import assertk.assertions.isNotNull
@@ -10,11 +9,9 @@ import de.codecentric.pact.SQSHelper
 import de.codecentric.pact.billing.BillingHandler
 import de.codecentric.pact.fulfillment.FulfillmentHandler
 import de.codecentric.pact.fulfillment.FulfillmentItem
-import de.codecentric.pact.order.Item
-import de.codecentric.pact.order.Order
-import de.codecentric.pact.order.OrderService
-import org.junit.jupiter.api.BeforeEach
-import org.junit.jupiter.api.Disabled
+import de.codecentric.pact.checkout.Item
+import de.codecentric.pact.checkout.Order
+import de.codecentric.pact.checkout.CheckoutService
 import org.junit.jupiter.api.Test
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -98,7 +95,7 @@ class ServiceIntegrationTest {
     }
 
     fun sendOrderToQueue(order: Order) {
-        val orderService = OrderService(sqsClient, queueUrl, objectMapper)
-        orderService.sendOrder(order)
+        val checkoutService = CheckoutService(sqsClient, queueUrl, objectMapper)
+        checkoutService.sendOrder(order)
     }
 }

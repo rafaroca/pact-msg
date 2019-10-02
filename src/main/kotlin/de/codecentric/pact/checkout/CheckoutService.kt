@@ -1,4 +1,4 @@
-package de.codecentric.pact.order
+package de.codecentric.pact.checkout
 
 import com.amazonaws.AmazonClientException
 import com.amazonaws.AmazonServiceException
@@ -8,7 +8,7 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
-class OrderService(private val sqs: AmazonSQS, private val queueUrl: String, private val mapper: ObjectMapper) {
+class CheckoutService(private val sqs: AmazonSQS, private val queueUrl: String, private val mapper: ObjectMapper) {
     private val log: Logger = LoggerFactory.getLogger(this::class.java)
 
     fun sendOrder(order: Order) {
