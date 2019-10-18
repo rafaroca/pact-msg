@@ -38,7 +38,7 @@ class CheckoutServiceProviderVerificationTest {
         context.target = AmpqTestTarget(Collections.emptyList())
     }
 
-    @PactVerifyProvider("an order event")
+    @PactVerifyProvider("an order to export")
     fun anOrderToExport(): String? {
         val checkoutService = CheckoutService(sqs, "localhost", objectMapper)
         val order = Order(

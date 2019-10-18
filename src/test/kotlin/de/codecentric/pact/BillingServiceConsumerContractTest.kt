@@ -12,10 +12,9 @@ import cloud.localstack.docker.annotation.LocalstackDockerProperties
 import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.KotlinModule
-import de.codecentric.pact.fulfillment.FulfillmentHandler
-import de.codecentric.pact.fulfillment.FulfillmentItem
+import de.codecentric.pact.billing.BillingHandler
+import de.codecentric.pact.billing.InvoiceItem
 import io.pactfoundation.consumer.dsl.LambdaDsl.newJsonBody
-import io.pactfoundation.consumer.dsl.newObject
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
@@ -25,38 +24,38 @@ import org.junit.jupiter.api.extension.ExtendWith
 @PactTestFor(providerName = "checkout-service", providerType = ProviderType.ASYNCH)
 @PactFolder("pacts")
 @LocalstackDockerProperties(randomizePorts = true, services = ["sqs"])
-class FulfillmentServiceConsumerContractTest {
+class BillingServiceConsumerContractTest {
 
     private val objectMapper = ObjectMapper()
         .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
         .registerModule(KotlinModule())
 
-    private val fulfillmentHandler = FulfillmentHandler(objectMapper)
+    private val billingHandler = BillingHandler(objectMapper)
 
-    val jsonBody = newJsonBody { o ->
+    private val billingJsonBody = newJsonBody { o ->
         o.stringType("customerId", "230542")
         o.eachLike("items", 2) { items ->
-            items.stringType("name", "Googly Eyes")
+            items.numberType("price", 512)
         }
     }.build()
 
-    @Pact(consumer = "fulfillment-service", provider = "checkout-service")
+    @Pact(consumer = "billing-service", provider = "checkout-service")
     fun exportAnOrder(builder: MessagePactBuilder): MessagePact =
         builder
             .hasPactWith("checkout-service")
             .expectsToReceive("an order to export")
-            .withContent(jsonBody)
+            .withContent(billingJsonBody)
             .toPact()
 
     @Test
     @PactTestFor(pactMethod = "exportAnOrder")
     fun testExportAnOrder(messages: List<Message>) {
         for (message in messages) {
-            val (items, customerId) = fulfillmentHandler.handleRequest(message.contents!!.valueAsString())
+            val invoice = billingHandler.handleRequest(message.contents!!.valueAsString())
 
-            assertEquals("230542", customerId)
-            assertTrue(items.contains(FulfillmentItem("Googly Eyes")))
-            assertEquals(2, items.size)
+            assertEquals("230542", invoice.customerId)
+            assertTrue(invoice.items.contains(InvoiceItem(512)))
+            assertEquals(1024, invoice.items.sumBy { it.price })
         }
     }
 }
