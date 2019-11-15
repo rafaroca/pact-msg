@@ -49,9 +49,6 @@ class CheckoutServiceProviderVerificationTest {
             ), "customerId"
             , "referralPartner"
         )
-
-        val message = checkoutService.createSqsMessage(order)
-
-        return message.messageBody
+        return checkoutService.createSqsMessage(order).messageBody
     }
 }
