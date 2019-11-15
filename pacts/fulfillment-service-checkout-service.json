@@ -1,0 +1,64 @@
+{
+  "consumer": {
+    "name": "fulfillment-service"
+  },
+  "provider": {
+    "name": "checkout-service"
+  },
+  "messages": [
+    {
+      "description": "an order to export",
+      "metaData": {
+        "contentType": "application/json; charset\u003dUTF-8"
+      },
+      "contents": {
+        "customerId": "230542",
+        "items": [
+          {
+            "name": "Googly Eyes"
+          },
+          {
+            "name": "Googly Eyes"
+          }
+        ]
+      },
+      "matchingRules": {
+        "body": {
+          "$.customerId": {
+            "matchers": [
+              {
+                "match": "type"
+              }
+            ],
+            "combine": "AND"
+          },
+          "$.items": {
+            "matchers": [
+              {
+                "match": "type",
+                "min": 0
+              }
+            ],
+            "combine": "AND"
+          },
+          "$.items[*].name": {
+            "matchers": [
+              {
+                "match": "type"
+              }
+            ],
+            "combine": "AND"
+          }
+        }
+      }
+    }
+  ],
+  "metadata": {
+    "pactSpecification": {
+      "version": "3.0.0"
+    },
+    "pact-jvm": {
+      "version": "3.6.10"
+    }
+  }
+}
